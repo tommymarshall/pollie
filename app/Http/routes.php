@@ -1,5 +1,9 @@
 <?php namespace App;
 
+$app->get('/', function() use ($app) {
+    return 'hi';
+});
+
 $app->post('vote', function() use ($app) {
     $room = Request::input('room');
     $vote = Request::input('vote');
