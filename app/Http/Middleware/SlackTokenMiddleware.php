@@ -13,7 +13,7 @@ class SlackTokenMiddleware {
      */
     public function handle($request, Closure $next)
     {
-        dd($request);
+        \Log::info($request);
 
         return $next($request);
     }
