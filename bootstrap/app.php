@@ -80,14 +80,6 @@ $app->middleware([
 */
 
 // $app->register('App\Providers\AppServiceProvider');
-$app->register('Vluzrmos\SlackApi\SlackApiServiceProvider');
-
-/*
-|--------------------------------------------------------------------------
-| Vendor Facades
-|--------------------------------------------------------------------------
-*/
-class_alias('Vluzrmos\SlackApi\SlackApiFacade', 'SlackApi');
 
 /*
 |--------------------------------------------------------------------------

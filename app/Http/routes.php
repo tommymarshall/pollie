@@ -1,7 +1,16 @@
 <?php namespace App;
 
-$app->get('/', function() use ($app) {
+use GuzzleHttp\Client;
+
+$app->post('/', function() use ($app) {
     return 'hi';
+});
+
+$app->get('/', function() use ($app) {
+    $client = new Client();
+    $api    = new SlackApi($client, getenv('SLACK_TOKEN'));
+
+    return $api->get('users.list');
 });
 
 $app->post('vote', function() use ($app) {
