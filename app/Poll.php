@@ -19,4 +19,18 @@ class Poll extends Model {
         return $this->hasMany('App\Vote');
     }
 
+    public function scopeActive($query, $channel_id)
+    {
+        return $query->where('active', true)
+                     ->where('channel_id', $channel_id)
+                     ->get();
+    }
+
+    public function scopeResultsFor($query, $channel_id)
+    {
+        return $query->find($id)
+                     ->with(['votes'])
+                     ->first();
+    }
+
 }

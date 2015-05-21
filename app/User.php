@@ -14,4 +14,11 @@ class User extends Model {
         return $this->hasMany('App\Poll');
     }
 
+    public function scopeGetSlackId($query, $user_id)
+    {
+        return $query->findOrNew([
+            'slack_user_id' => $user_id
+        ])->id;
+    }
+
 }

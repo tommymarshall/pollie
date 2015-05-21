@@ -16,10 +16,12 @@ class CreatePollsTable extends Migration {
         {
             $table->increments('id');
             $table->integer('user_id');
+            $table->string('slack_channel_id');
+            $table->string('slack_channel_name');
             $table->string('name');
-            $table->string('password');
+            $table->string('password', 4);
             $table->json('options');
-            $table->boolean('active');
+            $table->boolean('active')->default(false);
             $table->timestamps();
         });
     }

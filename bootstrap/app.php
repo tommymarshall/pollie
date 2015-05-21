@@ -56,7 +56,6 @@ $app->singleton(
 */
 
 $app->middleware([
-    'App\Http\Middleware\SlackTokenMiddleware',
     'Illuminate\Session\Middleware\StartSession',
     // 'Illuminate\Cookie\Middleware\EncryptCookies',
     // 'Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse',
@@ -64,9 +63,9 @@ $app->middleware([
     // 'Laravel\Lumen\Http\Middleware\VerifyCsrfToken',
 ]);
 
-// $app->routeMiddleware([
-
-// ]);
+$app->routeMiddleware([
+    'slack' => 'App\Http\Middleware\SlackTokenMiddleware',
+]);
 
 /*
 |--------------------------------------------------------------------------
@@ -79,7 +78,7 @@ $app->middleware([
 |
 */
 
-// $app->register('App\Providers\AppServiceProvider');
+$app->register('App\Providers\SlackServiceProvider');
 
 /*
 |--------------------------------------------------------------------------
