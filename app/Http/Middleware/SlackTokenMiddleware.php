@@ -13,9 +13,12 @@ class SlackTokenMiddleware {
      */
     public function handle($request, Closure $next)
     {
-        \Log::info($request);
+        if ($request->get('token') == '1wjXO8lq4Mb4wAV9QrRDCwQZ')
+        {
+            return $next($request);
+        }
 
-        return $next($request);
+        throw new \Exception("Cannot process request, token mismatch");
     }
 
 }
