@@ -1,9 +1,8 @@
 <?php
 
-$to = 'App\Http\Controllers\\';
+$ns = 'App\Http\Controllers\\';
 
-$app->post('/'                 , $to.'SlackController@listen');
-$app->post('polls/create'      , $to.'PollController@create');
-$app->get('polls/{id}/edit'    , $to.'PollController@edit');
-$app->put('polls/{id}/edit'    , $to.'PollController@update');
-$app->get('polls/{id}/results' , $to.'PollController@results');
+$app->post('/'                 , $ns.'SlackController@listen');
+$app->post('polls/create'      , $ns.'PollController@create');
+$app->get('polls/{id}/edit'    , $ns.'PollController@edit');
+$app->put('polls/{id}/edit'    , $ns.'PollController@update');

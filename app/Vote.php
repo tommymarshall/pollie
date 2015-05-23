@@ -6,6 +6,10 @@ class Vote extends Model {
 
     protected $fillable = ['poll_id', 'user_id', 'selection'];
 
+    protected $casts = [
+        'selection' => 'int'
+    ];
+
     public function user() {
         return $this->belongsTo('App\User');
     }

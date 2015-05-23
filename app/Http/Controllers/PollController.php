@@ -6,33 +6,35 @@ use App\Http\Controllers\Controller;
 
 class PollController extends Controller {
 
-    protected $slack;
-
     public function __construct()
     {
-        $this->middleware('admin');
-    }
-
-    public function create()
-    {
-        $id = Poll::create(Request::all());
-
-        return redirect('polls/'.$poll->id);
+        // $this->middleware('admin');
     }
 
     public function edit($id)
     {
-        $poll    = Poll::find($id)->with(['votes.user', 'user'])->first();
-        $options = $poll->options;
+        $poll  = Poll::find($id)->with(['votes.user', 'user'])->first();
 
-        return view('polls.show')->with(compact('poll', 'options'));
+        foreach($poll->votes as $vote)
+        {
+            $options = $poll->$options[$vote->selection];
+        }
+
+        return view('polls.edit')->with(compact('poll', 'options'));
     }
 
     public function update($id)
     {
-        $poll = Poll::find($id)->update(Request::all());
+        if ($poll = Poll::find($id)->update(Request::all()))
+        {
+            $message = 'Successfully updated';
+        }
+        else
+        {
+            $message = 'There was a problem';
+        }
 
-        return view('polls.show')->with(compact('poll'));
+        return redirect('polls/'.$id)->with(compact('message'))->withInput();
     }
 
 }

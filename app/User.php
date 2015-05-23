@@ -17,7 +17,7 @@ class User extends Model {
     public function scopeGetSlackId($query, $user_id)
     {
         return $query->findOrNew([
-            'slack_user_id' => $user_id
+            'slack_user_id'   => $user_id
         ])->id;
     }
 

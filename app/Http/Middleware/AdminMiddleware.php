@@ -19,8 +19,6 @@ class AdminMiddleware {
             return $next($request);
         }
 
-        $room = [];
-
         return redirect('password')->with(compact('room'));
     }
 

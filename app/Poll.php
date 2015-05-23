@@ -19,18 +19,16 @@ class Poll extends Model {
         return $this->hasMany('App\Vote');
     }
 
-    public function scopeActive($query, $channel_id)
+    public function scopeActiveChannel($query, $channel_id = "*")
     {
         return $query->where('active', true)
-                     ->where('channel_id', $channel_id)
-                     ->get();
+                     ->where('slack_channel_id', $channel_id);
     }
 
     public function scopeResultsFor($query, $channel_id)
     {
-        return $query->find($id)
-                     ->with(['votes'])
-                     ->first();
+        return $query->find($channel_id)
+                     ->with(['votes']);
     }
 
 }
