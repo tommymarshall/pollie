@@ -22,7 +22,7 @@ class SlackController extends Controller {
 
     public function listen(Request $request)
     {
-        $this->incoming = $slack->listen($request->all());
+        $this->incoming = $this->slack->listen($request->all());
         // $this->incoming = $this->slack->listen([
         //     'token'        => '1wjXO8lq4Mb4wAV9QrRDCwQZ',
         //     'team_id'      => 'T0001',
