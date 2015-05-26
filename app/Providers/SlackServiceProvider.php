@@ -19,7 +19,7 @@ class SlackServiceProvider extends ServiceProvider
                 'team'     => 'viget',
                 'username' => 'pollie',
                 'icon'     => false,
-                'parse'    => '',
+                'parse'    => 'full',
             ]);
         });
     }
