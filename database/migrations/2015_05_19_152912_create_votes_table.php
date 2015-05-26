@@ -15,8 +15,8 @@ class CreateVotesTable extends Migration {
         Schema::create('votes', function(Blueprint $table)
         {
             $table->increments('id');
+            $table->string('slack_user_id');
             $table->integer('poll_id');
-            $table->integer('user_id');
             $table->integer('selection');
             $table->timestamps();
         });

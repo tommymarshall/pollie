@@ -1,7 +1,7 @@
 <?php namespace App\Http\Middleware;
 
 use Closure;
-use Session;
+use App\Poll;
 
 class AdminMiddleware {
 
@@ -14,12 +14,20 @@ class AdminMiddleware {
      */
     public function handle($request, Closure $next)
     {
-        if (Session::has('admin'))
+        $url = explode('/', $request->url());
+
+        $post_id = end($url);
+
+        if ($request->session()->has('admin.'.$post_id))
         {
             return $next($request);
         }
 
-        return redirect('password')->with(compact('room'));
+        $request->session()->put('attempt', $post_id);
+
+        $poll = Poll::findOrFail($post_id);
+
+        return redirect('pin')->with(compact('poll'));
     }
 
 }

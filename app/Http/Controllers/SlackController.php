@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
-use App\User;
+use Illuminate\Http\Request;
+use App\Vote;
 use App\Poll;
 use App\Http\Controllers\Controller;
 
@@ -19,7 +20,7 @@ class SlackController extends Controller {
         $this->slack = app('Slack');
     }
 
-    public function listen(\Request $request)
+    public function listen(Request $request)
     {
         // $this->incoming = $slack->listen($request->all());
         $this->incoming = $this->slack->listen([
@@ -30,24 +31,24 @@ class SlackController extends Controller {
             'timestamp'    => '1355517523.000005',
             'user_id'      => 'U2147483697',
             'user_name'    => 'Steve',
-            'text'         => 'pollie: create when will tommy get a new job'
+            'text'         => 'pollie: vote 2'
         ]);
 
         $command = $this->getCommand($this->incoming->words());
 
-        $payload = substr($this->incoming->text(), 7);
+        $payload = $this->incoming->text();
 
         switch ($command) {
             case 'create':
-                $this->createPoll($payload);
+                $this->createPoll(substr($payload, 7));
                 break;
 
             case 'vote':
-                $this->submitVote($payload);
+                $this->submitVote(substr($payload, 5));
                 break;
 
             case 'results':
-                $this->showResults(trim($payload));
+                $this->showResults(substr($payload, 8));
                 break;
 
             default:
@@ -63,14 +64,18 @@ class SlackController extends Controller {
             return $this->incoming->respond("There's already an active vote! {$poll->name}");
         }
 
-        $password = rand(1000, 9999);
+        $pin = rand(1000, 9999);
 
         $poll = Poll::create([
-            'name'     => $name,
-            'password' => $password,
+            'name'               => $name,
+            'pin'                => $pin,
+            'slack_user_id'      => $this->incoming->userId(),
+            'slack_channel_id'   => $this->incoming->channelId(),
+            'slack_channel_name' => $this->incoming->channel(),
+            'options'            => ['option one', 'option two']
         ]);
 
-        $message = 'Edit your poll at '.url('polls/'.$poll->id.'/edit').'. Password is *'.$password.'*';
+        $message = 'Edit your poll at '.url('polls/'.$poll->id).'. Password pin is *'.$pin.'*';
 
         return $this->incoming->respond($message, '@'.$this->incoming->user());
     }
@@ -79,19 +84,33 @@ class SlackController extends Controller {
     {
         $results = Poll::resultsFor($channel ?: $this->incoming->channelId())->first();
 
-        $message = "Poll Results: ".$results;
+        dd($results);
+
+        $message = "Poll Results: ";
 
         return $this->incoming->respond($message);
     }
 
-    public function submitVote($vote)
+    public function submitVote($selection)
     {
-        if ($poll = Poll::active($this->incoming->channelId()))
+        $poll = Poll::activeChannel($this->incoming->channelId())->first();
+
+        if ($poll)
         {
-            $poll->votes()->create([
-                'user_id'   => User::getSlackId($this->incoming->userId()),
-                'selection' => $vote,
+            $vote = Vote::firstOrNew([
+                'slack_user_id' => $this->incoming->userId(),
+                'poll_id'       => $poll->id,
             ]);
+            $vote->selection = $selection;
+            $vote->save();
+
+            $poll->votes()->save($vote);
+
+            $message = 'Voted for *'.$poll->options[$selection - 1].'*';
+        }
+        else
+        {
+            $message = "There is no poll in this channel.";
         }
 
         return $this->incoming->respond($message, '@'.$this->incoming->user());

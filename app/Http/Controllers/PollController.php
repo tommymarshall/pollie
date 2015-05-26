@@ -1,5 +1,6 @@
 <?php namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\User;
 use App\Poll;
 use App\Http\Controllers\Controller;
@@ -8,33 +9,33 @@ class PollController extends Controller {
 
     public function __construct()
     {
-        // $this->middleware('admin');
+        $this->middleware('admin');
     }
 
     public function edit($id)
     {
-        $poll  = Poll::find($id)->with(['votes.user', 'user'])->first();
+        $poll = Poll::find($id);
 
-        foreach($poll->votes as $vote)
-        {
-            $options = $poll->$options[$vote->selection];
-        }
-
-        return view('polls.edit')->with(compact('poll', 'options'));
+        return view('polls.edit')->with(compact('poll'));
     }
 
-    public function update($id)
+    public function update(Request $request, $id)
     {
-        if ($poll = Poll::find($id)->update(Request::all()))
+        $poll = Poll::find($id);
+        $poll->name    = $request->input('name');
+        $poll->options = array_filter($request->input('options', []));
+        $poll->active  = $request->input('active');
+        $poll->save();
+
+        if ($request->input('notify'))
         {
-            $message = 'Successfully updated';
-        }
-        else
-        {
-            $message = 'There was a problem';
+            $slack = app('Slack');
+            $slack->chat('#'.$poll->slack_channel_name)
+                  ->send($poll->options);
+            $message = 'Successfully updated and the Options in #'.$poll->slack_channel_name.' room';
         }
 
-        return redirect('polls/'.$id)->with(compact('message'))->withInput();
+        return redirect('polls/'.$id)->with(compact('message'));
     }
 
 }

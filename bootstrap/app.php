@@ -65,6 +65,7 @@ $app->middleware([
 
 $app->routeMiddleware([
     'slack' => 'App\Http\Middleware\SlackTokenMiddleware',
+    'admin' => 'App\Http\Middleware\AdminMiddleware',
 ]);
 
 /*
