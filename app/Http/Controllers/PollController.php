@@ -29,7 +29,6 @@ class PollController extends Controller {
 
         if ($request->input('notify'))
         {
-            dd(implode('\r\n', $poll->options));
             $slack = app('Slack');
             $slack->chat('#'.$poll->slack_channel_name)
                   ->send(implode('\r\n', $poll->options));
