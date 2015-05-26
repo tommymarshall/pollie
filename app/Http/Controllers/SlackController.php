@@ -52,7 +52,7 @@ class SlackController extends Controller {
                 break;
 
             default:
-                return $this->incoming->respond("NO IDEA WHAT YOU'RE TALKING ABOUT");
+                $this->incoming->respond("NO IDEA WHAT YOU'RE TALKING ABOUT");
                 break;
         }
     }
@@ -61,7 +61,7 @@ class SlackController extends Controller {
     {
         if ($poll = Poll::activeChannel($this->incoming->channelId())->first())
         {
-            return $this->incoming->respond("There's already an active vote! {$poll->name}");
+            $this->incoming->respond("There's already an active vote! {$poll->name}");
         }
 
         $pin = rand(1000, 9999);
@@ -77,7 +77,7 @@ class SlackController extends Controller {
 
         $message = 'Edit your poll at '.url('polls/'.$poll->id).'. Password pin is *'.$pin.'*';
 
-        return $this->incoming->respond($message, '@'.$this->incoming->user());
+        $this->incoming->respond($message, '@'.$this->incoming->user());
     }
 
     public function showResults($channel = null)
@@ -88,7 +88,7 @@ class SlackController extends Controller {
 
         $message = "Poll Results: ";
 
-        return $this->incoming->respond($message);
+        $this->incoming->respond($message);
     }
 
     public function submitVote($selection)
@@ -113,7 +113,7 @@ class SlackController extends Controller {
             $message = "There is no poll in this channel.";
         }
 
-        return $this->incoming->respond($message, '@'.$this->incoming->user());
+        $this->incoming->respond($message, '@'.$this->incoming->user());
     }
 
     private function getCommand($words)
