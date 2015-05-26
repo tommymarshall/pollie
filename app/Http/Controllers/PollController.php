@@ -31,7 +31,8 @@ class PollController extends Controller {
         {
             $slack = app('Slack');
             $slack->chat('#'.$poll->slack_channel_name)
-                  ->send($poll->options);
+                  ->send(implode('\r\n', $poll->options));
+
             $message = 'Successfully updated and the Options in #'.$poll->slack_channel_name.' room';
         }
 
