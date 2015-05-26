@@ -13,7 +13,7 @@ class SlackTokenMiddleware {
      */
     public function handle($request, Closure $next)
     {
-        if ($request->get('token') == getenv('SLACK_REQUEST'))
+        if ($request->get('token') == getenv('SLACK_PUBLIC_REQUEST') || $request->get('token') == getenv('SLACK_PRIVATE_REQUEST'))
         {
             return $next($request);
         }
