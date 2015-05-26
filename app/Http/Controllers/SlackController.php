@@ -22,17 +22,17 @@ class SlackController extends Controller {
 
     public function listen(Request $request)
     {
-        // $this->incoming = $slack->listen($request->all());
-        $this->incoming = $this->slack->listen([
-            'token'        => '1wjXO8lq4Mb4wAV9QrRDCwQZ',
-            'team_id'      => 'T0001',
-            'channel_id'   => 'C2147483705',
-            'channel_name' => 'test',
-            'timestamp'    => '1355517523.000005',
-            'user_id'      => 'U2147483697',
-            'user_name'    => 'Steve',
-            'text'         => 'pollie: vote 2'
-        ]);
+        $this->incoming = $slack->listen($request->all());
+        // $this->incoming = $this->slack->listen([
+        //     'token'        => '1wjXO8lq4Mb4wAV9QrRDCwQZ',
+        //     'team_id'      => 'T0001',
+        //     'channel_id'   => 'C2147483705',
+        //     'channel_name' => 'test',
+        //     'timestamp'    => '1355517523.000005',
+        //     'user_id'      => 'U2147483697',
+        //     'user_name'    => 'Steve',
+        //     'text'         => 'pollie: vote 2'
+        // ]);
 
         $command = $this->getCommand($this->incoming->words());
 
