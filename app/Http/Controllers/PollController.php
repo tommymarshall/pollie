@@ -3,12 +3,16 @@
 use Illuminate\Http\Request;
 use App\User;
 use App\Poll;
+use App\Slacker;
 use App\Http\Controllers\Controller;
 
 class PollController extends Controller {
 
+    protected $slacker;
+
     public function __construct()
     {
+        $this->slacker = new Slacker;
         $this->middleware('admin');
     }
 
@@ -29,11 +33,11 @@ class PollController extends Controller {
 
         if ($request->input('notify'))
         {
-            $slack = app('Slack');
-            $slack->chat('#'.$poll->slack_channel_name)
-                  ->send(implode('\n', $poll->options));
+            $this->slacker->to('#'.$poll->slack_channel_name)
+                          ->text($poll->options)
+                          ->send();
 
-            $message = 'Successfully updated and the Options in #'.$poll->slack_channel_name.' room';
+            $message = 'Successfully updated poll in #'.$poll->slack_channel_name.' room';
         }
 
         return redirect('polls/'.$id)->with(compact('message'));

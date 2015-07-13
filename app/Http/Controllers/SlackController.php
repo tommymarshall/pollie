@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Slacker;
 use App\Vote;
 use App\Poll;
 use App\Http\Controllers\Controller;
@@ -11,50 +12,34 @@ class SlackController extends Controller {
 
     protected $incoming;
 
+    protected $slacker;
+
     protected $events = ['create', 'vote', 'close'];
 
     public function __construct()
     {
         $this->middleware('slack');
 
-        $this->slack = app('Slack');
+        $this->slacker = new Slacker;
     }
 
     public function listen(Request $request)
     {
-        if (getenv('APP_ENV') === 'local')
-        {
-            $this->incoming = $this->slack->listen([
-                'token'        => '1wjXO8lq4Mb4wAV9QrRDCwQZ',
-                'team_id'      => 'T0001',
-                'channel_id'   => 'C2147483705',
-                'channel_name' => 'test',
-                'timestamp'    => '1355517523.000005',
-                'user_id'      => 'U2147483697',
-                'user_name'    => 'Steve',
-                'text'         => 'pollie: vote 2'
-            ]);
-        }
-        else
-        {
-            $this->incoming = $this->slack->listen($request->all());
-        }
-
-        $command = $this->getCommand($this->incoming->words());
-
-        $payload = $this->incoming->text();
+        $payload = $this->formatPayload($request->all());
+        $command = $this->getCommand($payload);
+        $message = $this->getMessage($payload);
 
         switch ($command) {
             case 'create':
-                $this->createPoll(substr($payload, 7));
+                $this->createPoll($message);
                 break;
 
             case 'vote':
-                $this->submitVote(substr($payload, 5));
+                $this->submitVote($message);
                 break;
 
             case 'results':
-                $this->showResults(substr($payload, 8));
+                $this->showResults($message);
                 break;
 
             default:
@@ -122,14 +107,27 @@ class SlackController extends Controller {
         $this->incoming->respond($message, '@'.$this->incoming->user());
     }
 
-    private function getCommand($words)
+    private function getCommand($payload)
     {
+        $words    = explode(' ', $payload);
+        $words[0] = str_replace(':', '', $words[0]);
+
         foreach ($this->events as $event) {
             if (in_array($event, $words))
             {
                 return $event;
             }
         }
+    }
+
+    private function getMessage($payload)
+    {
+        return stristr($payload, ' ');
+    }
+
+    private function formatPayload($payload)
+    {
+        return array_shift(explode(' ', $payload));
     }
 
 }

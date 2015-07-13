@@ -79,7 +79,7 @@ $app->routeMiddleware([
 |
 */
 
-$app->register('App\Providers\SlackServiceProvider');
+// $app->register('App\Providers\AppServiceProvider');
 
 /*
 |--------------------------------------------------------------------------
